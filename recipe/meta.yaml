@@ -1,5 +1,5 @@
 {% set version = "6.7.2.12" %}
-{% set build = 0 %}
+{% set build = 1 %}
 {% set mpi = "openmpi" %}  # force this ... for now?
 {% set mpi_prefix = "mpi_" + mpi %}
 {% set build_pin = mpi_prefix + '_*' %}
@@ -32,7 +32,7 @@ requirements:
     - {{ stdlib("c") }}
     - {{ compiler("cxx") }}
   host:
-    - {{ mpi }} 5  # temp: move ahead of global pin to get right casacore
+    - {{ mpi }}
     - casacore >=3.7 {{ mpi_prefix }}_*
     - casacpp {{ version }} {{ mpi_prefix }}_*
     - libgomp      # [linux]
@@ -45,7 +45,7 @@ requirements:
     - swig
     - xerces-c
   run:
-    - {{ mpi }} 5  # temp: move ahead of global pin to get right casacore
+    - {{ mpi }}
     - casaconfig
     - python
 
