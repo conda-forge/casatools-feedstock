@@ -36,6 +36,7 @@ requirements:
     - casacore >=3.7 {{ mpi_prefix }}_*
     - casacpp {{ version }} {{ mpi_prefix }}_*
     - libgomp      # [linux]
+    - libxml2-devel
     - llvm-openmp  # [osx]
     - numpy
     - pip
