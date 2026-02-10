@@ -1,5 +1,5 @@
 {% set version = "6.7.2.42" %}
-{% set build = 0 %}
+{% set build = 1 %}
 {% set mpi = "openmpi" %}  # force this ... for now?
 {% set mpi_prefix = "mpi_" + mpi %}
 {% set build_pin = mpi_prefix + '_*' %}
@@ -22,10 +22,15 @@ build:
 
 requirements:
   build:
+    - python                                 # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - numpy                                  # [build_platform != target_platform]
     - cmake <4
+    - ninja
     - libgomp      # [linux]
     - llvm-openmp  # [osx]
     - make
+    - swig
     - openjdk
     - pkg-config
     - {{ compiler("c") }}
