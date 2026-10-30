@@ -1,15 +1,16 @@
 github:
   branch_name: main
   tooling_branch_name: main
-azure:
-  free_disk_space: true
-  settings_linux:
-    swapfile_size: 10GiB
-build_platform:
-  osx_arm64: osx_64
-  linux_aarch64: linux_64
 conda_build:
   pkg_format: 2
   error_overlinking: true
 conda_forge_output_validation: true
 test: native_and_emulated
+workflow_settings:
+  free_disk_space: quick
+  pagefile_size:
+    - os: linux
+      value: 10
+provider:
+  linux_aarch64: default
+  osx_arm64: default
