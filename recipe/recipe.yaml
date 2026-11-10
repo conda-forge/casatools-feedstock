@@ -20,7 +20,12 @@ source:
 build:
   number: ${{ build }}
   string: "${{ mpi_prefix }}_py${{ python | version_to_buildstring }}h${{ hash }}_${{ build }}"
-  skip: win
+  # Python >=3.15 only has casacore >=3.8.2, which has API breaks that are not
+  # currently supported in CASA6. Hopefully this will be straightened out by the
+  # time that Python 3.16 is coming out.
+  skip:
+    - win
+    - match(python, "==3.15")
 
 requirements:
   build:
