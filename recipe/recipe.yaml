@@ -1,0 +1,126 @@
+schema_version: 1
+
+context:
+  version: "6.8.0.3"
+  build: 0
+  mpi: openmpi  # force this ... for now?
+  mpi_prefix: ${{ "mpi_" + mpi }}
+
+package:
+  name: casatools
+  version: ${{ version }}
+
+source:
+  url: https://open-bitbucket.nrao.edu/rest/api/latest/projects/CASA/repos/casa6/archive?at=refs%2Ftags%2F${{ version }}&format=tgz
+  sha256: 166f9a797c641dda9ab8322b486f2d02cb4cde4c83228efa49b0b4a1fae58c7b
+  file_name: casa-${{ version }}.tar.gz
+  # Note: there are patches, but because rattler-build refuses to detect the
+  # source file as a tarball, we must apply them manually.
+
+build:
+  number: ${{ build }}
+  string: "${{ mpi_prefix }}_py${{ python | version_to_buildstring }}h${{ hash }}_${{ build }}"
+  skip: win
+
+requirements:
+  build:
+    - if: build_platform != target_platform
+      then:
+        - python
+        - cross-python_${{ target_platform }}
+        - numpy
+    - cmake <4
+    - if: linux
+      then: libgomp
+    - if: osx
+      then: llvm-openmp
+    - make
+    - ninja
+    - openjdk
+    - patch
+    - pkgconf
+    - swig <4.5  # 4.5 removes compatibility definitions needed by CASA6
+    - tar
+    - ${{ compiler("c") }}
+    - ${{ stdlib("c") }}
+    - ${{ compiler("cxx") }}
+  host:
+    - ${{ mpi }}
+    # get our casacore dep from casacpp
+    - casacpp =${{ version }} ${{ mpi_prefix }}_*
+    - if: linux
+      then: libgomp
+    - libxml2-devel
+    - if: osx
+      then: llvm-openmp
+    - numpy
+    - pip
+    - python
+    - readline
+    - setuptools <81
+    - swig <4.5
+    - xerces-c
+  run:
+    - ${{ mpi }}
+    - casaconfig
+    - python
+    - setuptools <81  # generated code needs pkg_resources module
+
+tests:
+  - python:
+      imports:
+        - casatools
+        - casatools.__casac__
+        - casatools.__casac__.agentflagger
+        - casatools.__casac__.atcafiller
+        - casatools.__casac__.atmosphere
+        - casatools.__casac__.calanalysis
+        - casatools.__casac__.calibrater
+        - casatools.__casac__.componentlist
+        - casatools.__casac__.coordsys
+        - casatools.__casac__.functional
+        - casatools.__casac__.imagemetadata
+        - casatools.__casac__.imagepol
+        - casatools.__casac__.image
+        - casatools.__casac__.imager
+        - casatools.__casac__.iterbotsink
+        - casatools.__casac__.linearmosaic
+        - casatools.__casac__.logsink
+        - casatools.__casac__.measures
+        - casatools.__casac__.miriadfiller
+        - casatools.__casac__.msmetadata
+        - casatools.__casac__.ms
+        - casatools.__casac__.mstransformer
+        - casatools.__casac__.msuvbinner
+        - casatools.__casac__.quanta
+        - casatools.__casac__.regionmanager
+        - casatools.__casac__.sakura
+        - casatools.__casac__.sdm
+        - casatools.__casac__.sidebandseparator
+        - casatools.__casac__.simulator
+        - casatools.__casac__.singledishms
+        - casatools.__casac__.spectralline
+        - casatools.__casac__.synthesisdeconvolver
+        - casatools.__casac__.synthesisimager
+        - casatools.__casac__.synthesisimstore
+        - casatools.__casac__.synthesismaskhandler
+        - casatools.__casac__.synthesisnormalizer
+        - casatools.__casac__.synthesisutils
+        - casatools.__casac__.table
+        - casatools.__casac__.tablerow
+        - casatools.__casac__.utils
+        - casatools.__casac__.vlafiller
+        - casatools.__casac__.vpmanager
+        - casatools.__casac__.wvr
+      pip_check: false
+
+about:
+  license: LGPL-2.1-or-later
+  license_file: LICENSE.txt
+  summary: Python tool implementations for CASA, the radio astronomical data processing package
+  homepage: http://casa.nrao.edu/
+
+extra:
+  recipe-maintainers:
+    - pkgw
+
